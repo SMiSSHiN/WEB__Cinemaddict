@@ -1,4 +1,3 @@
-import { renderTemplate, RenderPosition } from './render.js';
 import { createUserProfileTemplate } from './view/user-profile-view.js';
 import { createNavigationTemplate } from './view/navigation-view.js';
 import { createFilterTemplate } from './view/filter-view.js';
@@ -6,7 +5,9 @@ import { createBoardTemplate } from './view/board-view.js';
 import { createFooterStatisticsTemplate } from './view/footer-statistics-view.js';
 import { createFilmCardTemplate } from './view/film-card-view.js';
 import { createPopupTemplate } from './view/popup-view.js';
-import { createShowMoreButtonTemplate } from './view/show-more-button-view.js';
+import ShowMoreButtonView from './view/show-more-button-view.js';
+
+import { RenderPosition, renderTemplate, renderElement, createElement } from './render.js';
 
 import { generateFilm } from './mock/film.js';
 
@@ -26,18 +27,20 @@ renderTemplate(siteMainElement, createBoardTemplate(), RenderPosition.BEFOREEND)
 const filmsListElement = siteMainElement.querySelector('.films-list');
 const filmsListContainerElement = siteMainElement.querySelectorAll('.films-list__container');
 
-for (let i = 0; i < Math.min(films.length, FILM_STEP); i++) {
+for (var i = 0; i < Math.min(films.length, FILM_STEP); i++) {
     renderTemplate(filmsListContainerElement[0], createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
 }
 
 if (films.length > FILM_STEP) {
     let renderFilmCount = FILM_STEP;
 
-    renderTemplate(filmsListElement, createShowMoreButtonTemplate(), RenderPosition.BEFOREEND);
+    const showMoreButtonComponent = new ShowMoreButtonView();
+    // renderTemplate(filmsListElement, ShowMoreButtonView.template, RenderPosition.BEFOREEND);
 
-    const showMoreButton = filmsListElement.querySelector('.films-list__show-more');
+    // const showMoreButton = filmsListElement.querySelector('.films-list__show-more');
+    renderElement(filmsListElement, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
 
-    showMoreButton.addEventListener('click', (evt) => {
+    showMoreButtonComponent.element.addEventListener('click', (evt) => {
         evt.preventDefault();
         
         films
@@ -47,9 +50,10 @@ if (films.length > FILM_STEP) {
             });
         
         renderFilmCount += FILM_STEP;
-
+        
         if (renderFilmCount >= films.length) {
-            showMoreButton.remove();
+            showMoreButtonComponent.element.remove();
+            showMoreButtonComponent.removeElement();
         }
     });
 }
