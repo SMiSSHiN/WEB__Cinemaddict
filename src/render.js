@@ -30,6 +30,7 @@ export const renderElement = (container, element, place) => {
 
 // [?] Зачем нужна ф-ия createElement ?
 // [A]  - Для создания DOM элементов из строк.
+// [A]  - Нам нужно получить DOM элемент и никуда его не добавлять
 // [A]  - Change 'firstChild' to div.childNodes to support multiple top-level nodes.
 export const createElement = (template) => {
     const newElement = document.createElement('div');

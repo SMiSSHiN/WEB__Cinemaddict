@@ -1,11 +1,12 @@
 import { createUserProfileTemplate } from './view/user-profile-view.js';
 import { createNavigationTemplate } from './view/navigation-view.js';
-import { createFilterTemplate } from './view/filter-view.js';
-import { createBoardTemplate } from './view/board-view.js';
-import { createFooterStatisticsTemplate } from './view/footer-statistics-view.js';
+import FilterView from './view/filter-view.js';
+import BoardView  from './view/board-view.js';
+import FooterStatisticsView from './view/footer-statistics-view.js';
 import { createFilmCardTemplate } from './view/film-card-view.js';
 import { createPopupTemplate } from './view/popup-view.js';
 import ShowMoreButtonView from './view/show-more-button-view.js';
+import NoMoviesView from './view/no-movies-view.js';
 
 import { RenderPosition, renderTemplate, renderElement, createElement } from './render.js';
 
@@ -21,8 +22,8 @@ const siteMainElement = document.querySelector('.main');
 
 renderTemplate(siteHeaderElement, createUserProfileTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createNavigationTemplate(films), RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement, createFilterTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement, createBoardTemplate(), RenderPosition.BEFOREEND);
+renderElement(siteMainElement, new FilterView().element, RenderPosition.BEFOREEND);
+renderElement(siteMainElement, new BoardView().element, RenderPosition.BEFOREEND);
 
 const filmsListElement = siteMainElement.querySelector('.films-list');
 const filmsListContainerElement = siteMainElement.querySelectorAll('.films-list__container');
@@ -66,5 +67,5 @@ renderTemplate(filmsListContainerElement[2], createFilmCardTemplate(films[++i]),
 const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
 
-renderTemplate(footerStatisticsElement, createFooterStatisticsTemplate(), RenderPosition.BEFOREEND);
+renderElement(footerStatisticsElement, new FooterStatisticsView().element, RenderPosition.BEFOREEND);
 // renderTemplate(footerElement, createPopupTemplate(films[++i]), RenderPosition.AFTEREND);
