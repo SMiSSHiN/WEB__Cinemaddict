@@ -1,4 +1,6 @@
 // Переписать, когда будет структура пользователя
+// Написать ф-ию createFilter(films), которая будет возвращать
+//  готовый объект {films.length, watchedFilmsCount, voriteFilmsCount}
 
 export const createNavigationTemplate = (films) => {  
   
