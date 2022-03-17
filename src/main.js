@@ -17,6 +17,12 @@ import { generateFilm } from './mock/film.js';
 const FILM_STEP = 5;
 const FILM_COUNT = 22;
 
+const renderFilm = (filmsListElement, film) => {
+    const filmComponent = new FilmCardView(film);
+    
+    render(filmsListElement, filmComponent.element, RenderPosition.BEFOREEND);
+};
+
 const films = Array.from({length: FILM_COUNT}, generateFilm);
 const filter = createFilter(films);
 
@@ -33,11 +39,11 @@ render(siteMainElement, boardComponent.element, RenderPosition.BEFOREEND);
 const filmsListComponent = new FilmsListView();
 render(boardComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
 
-const filmsListElement = filmsListComponent.element.querySelector('.films-list');
+const filmsListElement = boardComponent.element.querySelector('.films-list');
 const filmsListContainerElement = filmsListComponent.element.querySelectorAll('.films-list__container');
 
 for (var i = 0; i < Math.min(films.length, FILM_STEP); i++) {
-    render(filmsListContainerElement[0], new FilmCardView(films[i]).element, RenderPosition.BEFOREEND);
+    renderFilm(filmsListContainerElement[0], films[i]);
 }
 
 if (films.length > FILM_STEP) {
@@ -53,7 +59,7 @@ if (films.length > FILM_STEP) {
         films
             .slice(renderFilmCount, renderFilmCount + FILM_STEP)
             .forEach((film) => {
-                render(filmsListContainerElement[0], new FilmCardView(film).element, RenderPosition.BEFOREEND);
+                renderFilm(filmsListContainerElement[0], film);
             });
         
         renderFilmCount += FILM_STEP;
