@@ -1,3 +1,5 @@
+import { createElement } from "../render.js";
+
 const createGenreMarkup = (genre) => {
   const genreMarkup = [];
   
@@ -196,3 +198,26 @@ export const createPopupTemplate = (film) => {
     </form>
   </section>`
 };
+
+export default class PopupView {
+    constructor(film) {
+        this._film = film;
+        this._element = null;
+    }
+
+    get element() {
+        if(!this._element) {
+            this._element = createElement(this.template);
+        }
+
+        return this._element;
+    }
+
+    get template() {
+        return createPopupTemplate(this._film);
+    }
+
+    removeElement() {
+        this._element = null;
+    }
+}

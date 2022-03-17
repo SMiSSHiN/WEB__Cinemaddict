@@ -1,9 +1,9 @@
 import { createElement } from "../render.js";
 
-// [] Разбить на:
-// []   - FilmsList
-// []   - FilmsListTopRated
-// []   - FilmsListMostCommented
+// [ ] Разбить на:
+// [+]   - FilmsList
+// [ ]   - FilmsListTopRated
+// [ ]   - FilmsListMostCommented
 const createBoardTemplate = () => (`<section class="films"></section>`);
 
 export default class BoardView {
@@ -16,7 +16,7 @@ export default class BoardView {
             this._element = createElement(this.template);
         }
 
-        return this._element
+        return this._element;
     }
 
     get template() {

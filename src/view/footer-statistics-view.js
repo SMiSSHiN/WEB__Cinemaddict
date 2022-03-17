@@ -2,7 +2,7 @@
 
 import { createElement } from "../render.js";
 
-export const createFooterStatisticsTemplate = () => (
+const createFooterStatisticsTemplate = () => (
     `<p>130 291 movies inside</p>`
 );
 
