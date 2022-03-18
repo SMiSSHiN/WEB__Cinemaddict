@@ -20,13 +20,68 @@ const FILM_COUNT = 22;
 const renderFilm = (filmsListElement, film) => {
     const filmComponent = new FilmCardView(film);
     
+    // [-] Добавить смену курсора с стрелки на палец при наведении на эти 3 элемента
+    const filmComponenPoster = filmComponent.element.querySelector('.film-card__poster');
+    const filmComponentTitle = filmComponent.element.querySelector('.film-card__title');
+    const filmComponentComments = filmComponent.element.querySelector('.film-card__comments');
+
+    const cardToPopupOnClickElements = [filmComponenPoster, filmComponentTitle, filmComponentComments];
+
+    const replaceCardToPopup = () => {
+        popupComponent.film = film;
+        // [?] Тем не менее можно кликать на элементы за Popup...
+        // [?] Как исправить
+        siteBodyElement.classList.add('hide-overflow');
+        render(footerElement, popupComponent.element, RenderPosition.AFTEREND);
+
+        const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
+
+        document.addEventListener('keydown', onEscKeyDown);
+        popupComponentCloseElement.addEventListener('click', onCloseClick);
+    };
+
+    const replacePopupToCard = () => {
+        popupComponent.element.remove();
+        
+        removePopupEvents();
+    };
+
+    const onEscKeyDown = (evt) => {
+        if(evt.key === 'Escape' || evt.key === 'Esc') {
+            evt.preventDefault();
+            replacePopupToCard();
+        }
+    }; 
+
+    const onCloseClick = () => {
+        replacePopupToCard();
+    };
+
+    const removePopupEvents = () => {
+        const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
+
+        siteBodyElement.classList.remove('hide-overflow');
+
+        popupComponentCloseElement.removeEventListener('click', onCloseClick);
+        document.removeEventListener('keydown', onEscKeyDown);
+    };
+
     render(filmsListElement, filmComponent.element, RenderPosition.BEFOREEND);
+
+    cardToPopupOnClickElements.forEach((element) => {
+        element.addEventListener('click', () => {
+            replaceCardToPopup();
+        });
+    });
 };
 
 const films = Array.from({length: FILM_COUNT}, generateFilm);
 const filter = createFilter(films);
 
+const popupComponent = new PopupView();
+
 const siteHeaderElement = document.querySelector('.header');
+const siteBodyElement = document.querySelector('body');
 const siteMainElement = document.querySelector('.main');
 
 render(siteHeaderElement, new UserProfileView().element, RenderPosition.BEFOREEND);
@@ -80,4 +135,3 @@ const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
 
 render(footerStatisticsElement, new FooterStatisticsView().element, RenderPosition.BEFOREEND);
-// renderElement(footerElement, new PopupView(films[++i]).element, RenderPosition.AFTEREND);
