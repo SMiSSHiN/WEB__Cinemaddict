@@ -78,8 +78,6 @@ const renderFilm = (filmsListElement, film) => {
 const films = Array.from({length: FILM_COUNT}, generateFilm);
 const filter = createFilter(films);
 
-const popupComponent = new PopupView();
-
 const siteHeaderElement = document.querySelector('.header');
 const siteBodyElement = document.querySelector('body');
 const siteMainElement = document.querySelector('.main');
@@ -96,6 +94,12 @@ render(boardComponent.element, filmsListComponent.element, RenderPosition.BEFORE
 
 const filmsListElement = boardComponent.element.querySelector('.films-list');
 const filmsListContainerElement = filmsListComponent.element.querySelectorAll('.films-list__container');
+
+if(films.length === 0) {
+    render(filmsListElement, new NoMoviesView().element, RenderPosition.AFTERBEGIN)
+}
+
+const popupComponent = new PopupView();
 
 for (var i = 0; i < Math.min(films.length, FILM_STEP); i++) {
     renderFilm(filmsListContainerElement[0], films[i]);
@@ -125,11 +129,6 @@ if (films.length > FILM_STEP) {
         }
     });
 }
-
-// renderTemplate(filmsListContainerElement[1], createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
-// renderTemplate(filmsListContainerElement[1], createFilmCardTemplate(films[++i]), RenderPosition.BEFOREEND);
-// renderTemplate(filmsListContainerElement[2], createFilmCardTemplate(films[++i]), RenderPosition.BEFOREEND);
-// renderTemplate(filmsListContainerElement[2], createFilmCardTemplate(films[++i]), RenderPosition.BEFOREEND);
 
 const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
