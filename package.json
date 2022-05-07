@@ -4,7 +4,7 @@
   "private": true,
   "description": "Проект «Киноман» от HTML Academy",
   "scripts": {
-    "eslint": "eslint src/",
+    "eslint": "eslint src/**/*.js",
     "test": "npm run eslint",
     "build": "webpack --mode development",
     "start": "webpack-dev-server --open"

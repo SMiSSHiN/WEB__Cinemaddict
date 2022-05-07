@@ -1,4 +1,4 @@
-import { createElement } from "../render.js";
+import AbstractView from "./abstract-view.js";
 
 // [?] Подумать, как добавить TopRated, MostCommented разметку
 // [A] 
@@ -24,24 +24,8 @@ const createMostCommentedListTemplate = () => (
   </section>`
 );
 
-export default class FilmsListView {
-    constructor() {
-        this._element = null;
-    }
-
-    get element() {
-        if(!this._element) {
-            this._element = createElement(this.template);
-        }
-
-        return this._element;
-    }
-
+export default class FilmsListView extends AbstractView {
     get template() {
         return createFilmsListTemplate();
-    }
-
-    removeElement() {
-        this._element = null;
     }
 }
