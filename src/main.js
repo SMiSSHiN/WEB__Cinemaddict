@@ -1,66 +1,138 @@
-import { renderTemplate, RenderPosition } from './render.js';
-import { createUserProfileTemplate } from './view/user-profile-view.js';
-import { createNavigationTemplate } from './view/navigation-view.js';
-import { createFilterTemplate } from './view/filter-view.js';
-import { createBoardTemplate } from './view/board-view.js';
-import { createFooterStatisticsTemplate } from './view/footer-statistics-view.js';
-import { createFilmCardTemplate } from './view/film-card-view.js';
-import { createPopupTemplate } from './view/popup-view.js';
-import { createShowMoreButtonTemplate } from './view/show-more-button-view.js';
+import UserProfileView from './view/user-profile-view.js';
+import { createFilter } from './view/navigation-view.js';
+import NavigationView from './view/navigation-view.js';
+import FilterView from './view/filter-view.js';
+import BoardView  from './view/board-view.js';
+import FilmsListView from './view/films-list-view.js';
+import FooterStatisticsView from './view/footer-statistics-view.js';
+import FilmCardView from './view/film-card-view.js';
+import PopupView from './view/popup-view.js';
+import ShowMoreButtonView from './view/show-more-button-view.js';
+import NoMoviesView from './view/no-movies-view.js';
+
+import { render, RenderPosition } from './render.js';
 
 import { generateFilm } from './mock/film.js';
 
 const FILM_STEP = 5;
 const FILM_COUNT = 22;
 
+const renderFilm = (filmsListElement, film) => {
+    const filmComponent = new FilmCardView(film);
+    
+    // [-] Добавить смену курсора с стрелки на палец при наведении на эти 3 элемента
+    const filmComponenPoster = filmComponent.element.querySelector('.film-card__poster');
+    const filmComponentTitle = filmComponent.element.querySelector('.film-card__title');
+    const filmComponentComments = filmComponent.element.querySelector('.film-card__comments');
+
+    const cardToPopupOnClickElements = [filmComponenPoster, filmComponentTitle, filmComponentComments];
+
+    const replaceCardToPopup = () => {
+        popupComponent.film = film;
+        // [?] Тем не менее можно кликать на элементы за Popup...
+        // [?] Как исправить
+        siteBodyElement.classList.add('hide-overflow');
+        render(footerElement, popupComponent.element, RenderPosition.AFTEREND);
+
+        const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
+
+        document.addEventListener('keydown', onEscKeyDown);
+        popupComponentCloseElement.addEventListener('click', onCloseClick);
+    };
+
+    const replacePopupToCard = () => {
+        popupComponent.element.remove();
+        
+        removePopupEvents();
+    };
+
+    const onEscKeyDown = (evt) => {
+        if(evt.key === 'Escape' || evt.key === 'Esc') {
+            evt.preventDefault();
+            replacePopupToCard();
+        }
+    }; 
+
+    const onCloseClick = () => {
+        replacePopupToCard();
+    };
+
+    const removePopupEvents = () => {
+        const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
+
+        siteBodyElement.classList.remove('hide-overflow');
+
+        popupComponentCloseElement.removeEventListener('click', onCloseClick);
+        document.removeEventListener('keydown', onEscKeyDown);
+    };
+
+    render(filmsListElement, filmComponent.element, RenderPosition.BEFOREEND);
+
+    cardToPopupOnClickElements.forEach((element) => {
+        element.addEventListener('click', () => {
+            replaceCardToPopup();
+        });
+    });
+};
+
+const renderBoard = (boardContainer, boardFilms) => {
+    const boardComponent = new BoardView();
+    const filmsListComponent = new FilmsListView();
+
+    render(boardContainer, boardComponent.element, RenderPosition.BEFOREEND);
+    render(boardComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
+
+    const filmsListElement = boardComponent.element.querySelector('.films-list');
+    const filmsListContainerElement = filmsListComponent.element.querySelectorAll('.films-list__container');
+
+    if(boardFilms.length === 0) {
+        render(filmsListElement, new NoMoviesView().element, RenderPosition.AFTERBEGIN)
+    }
+    
+    for (var i = 0; i < Math.min(boardFilms.length, FILM_STEP); i++) {
+        renderFilm(filmsListContainerElement[0], boardFilms[i]);
+    }
+    
+    if (boardFilms.length > FILM_STEP) {
+        let renderFilmCount = FILM_STEP;
+    
+        const showMoreButtonComponent = new ShowMoreButtonView();
+    
+        render(filmsListElement, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
+    
+        showMoreButtonComponent.element.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            
+            boardFilms
+                .slice(renderFilmCount, renderFilmCount + FILM_STEP)
+                .forEach((film) => {
+                    renderFilm(filmsListContainerElement[0], film);
+                });
+            
+            renderFilmCount += FILM_STEP;
+            
+            if (renderFilmCount >= boardFilms.length) {
+                showMoreButtonComponent.element.remove();
+                showMoreButtonComponent.removeElement();
+            }
+        });
+    }
+};
+
 const films = Array.from({length: FILM_COUNT}, generateFilm);
+const filter = createFilter(films);
 
 const siteHeaderElement = document.querySelector('.header');
+const siteBodyElement = document.querySelector('body');
 const siteMainElement = document.querySelector('.main');
 
-renderTemplate(siteHeaderElement, createUserProfileTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement, createNavigationTemplate(films), RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement, createFilterTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement, createBoardTemplate(), RenderPosition.BEFOREEND);
+render(siteHeaderElement, new UserProfileView().element, RenderPosition.BEFOREEND);
+render(siteMainElement, new NavigationView(filter).element, RenderPosition.BEFOREEND);
+render(siteMainElement, new FilterView().element, RenderPosition.BEFOREEND);
 
-const filmsListElement = siteMainElement.querySelector('.films-list');
-const filmsListContainerElement = siteMainElement.querySelectorAll('.films-list__container');
-
-for (let i = 0; i < Math.min(films.length, FILM_STEP); i++) {
-    renderTemplate(filmsListContainerElement[0], createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
-}
-
-if (films.length > FILM_STEP) {
-    let renderFilmCount = FILM_STEP;
-
-    renderTemplate(filmsListElement, createShowMoreButtonTemplate(), RenderPosition.BEFOREEND);
-
-    const showMoreButton = filmsListElement.querySelector('.films-list__show-more');
-
-    showMoreButton.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        
-        films
-            .slice(renderFilmCount, renderFilmCount + FILM_STEP)
-            .forEach((film) => {
-                renderTemplate(filmsListContainerElement[0], createFilmCardTemplate(film), RenderPosition.BEFOREEND);
-            });
-        
-        renderFilmCount += FILM_STEP;
-
-        if (renderFilmCount >= films.length) {
-            showMoreButton.remove();
-        }
-    });
-}
-
-renderTemplate(filmsListContainerElement[1], createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
-renderTemplate(filmsListContainerElement[1], createFilmCardTemplate(films[++i]), RenderPosition.BEFOREEND);
-renderTemplate(filmsListContainerElement[2], createFilmCardTemplate(films[++i]), RenderPosition.BEFOREEND);
-renderTemplate(filmsListContainerElement[2], createFilmCardTemplate(films[++i]), RenderPosition.BEFOREEND);
+renderBoard(siteMainElement, films)
 
 const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
 
-renderTemplate(footerStatisticsElement, createFooterStatisticsTemplate(), RenderPosition.BEFOREEND);
-// renderTemplate(footerElement, createPopupTemplate(films[++i]), RenderPosition.AFTEREND);
+render(footerStatisticsElement, new FooterStatisticsView().element, RenderPosition.BEFOREEND);

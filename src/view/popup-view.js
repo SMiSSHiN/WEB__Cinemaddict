@@ -1,3 +1,41 @@
+import { createElement } from "../render.js";
+
+const FILM = {
+    filmInfo: {
+        title: "Popeye the Sailor Meets Sindbad the Sailor",
+        totalRating: 1.9,
+        poster: "made-for-each-other.png",
+        ageRating: 0,
+        director: "Christian Bale",
+        writers: ["Tom Hanks"],
+        actors: [
+            "Brad Bird",
+            "Michael Caine",
+            "Robert De Niro",
+            "Robert Zemeckis",
+            "Robert Rodrigues"
+        ],
+        release: {
+            date: "18 March 1984",
+            releaseCountry: "Russia"
+        },
+        runtime: 103,
+        genre: ["Action"],
+        description: [
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "Cras aliquet varius magna, non porta ligula feugiat eget.",
+            "Fusce tristique felis at fermentum pharetra."
+        ]
+    },
+    userDetails: {
+        watchlist: true,
+        alreadyWatched: false,
+        watchingDate: null,
+        favorite: true
+    },
+    comments: [0, 1]
+}
+
 const createGenreMarkup = (genre) => {
   const genreMarkup = [];
   
@@ -196,3 +234,32 @@ export const createPopupTemplate = (film) => {
     </form>
   </section>`
 };
+
+export default class PopupView {
+    constructor(film = FILM) {
+        this._film = film;
+        this._element = null;
+    }
+
+    get element() {
+        if(!this._element) {
+            this._element = createElement(this.template);
+        }
+
+        return this._element;
+    }
+
+    get template() {
+        return createPopupTemplate(this._film);
+    }
+
+    set film(film) {
+        // Должна быть проверка на то, какой объект пришел в метод
+        this._film = film;
+        this._element = createElement(this.template);
+    }
+
+    removeElement() {
+        this._element = null;
+    }
+}
