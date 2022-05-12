@@ -1,6 +1,6 @@
-import { createElement } from "../render.js";
+import AbstractView from "./abstract-view.js";
 
-const FILM = {
+const BLANK_FILM = {
     filmInfo: {
         title: "Popeye the Sailor Meets Sindbad the Sailor",
         totalRating: 1.9,
@@ -235,31 +235,13 @@ export const createPopupTemplate = (film) => {
   </section>`
 };
 
-export default class PopupView {
-    constructor(film = FILM) {
+export default class PopupView extends AbstractView {
+    constructor(film = BLANK_FILM) {
+        super();
         this._film = film;
-        this._element = null;
-    }
-
-    get element() {
-        if(!this._element) {
-            this._element = createElement(this.template);
-        }
-
-        return this._element;
     }
 
     get template() {
         return createPopupTemplate(this._film);
-    }
-
-    set film(film) {
-        // Должна быть проверка на то, какой объект пришел в метод
-        this._film = film;
-        this._element = createElement(this.template);
-    }
-
-    removeElement() {
-        this._element = null;
     }
 }
