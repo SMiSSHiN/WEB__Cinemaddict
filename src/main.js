@@ -19,13 +19,16 @@ const FILM_COUNT = 22;
 
 const renderFilm = (filmsListElement, film) => {
     const filmComponent = new FilmCardView(film);
+    const popupComponent = new PopupView();
     
-    // [-] Добавить смену курсора с стрелки на палец при наведении на эти 3 элемента
+    // [?] Добавить смену курсора с стрелки на палец при наведении на эти 3 элемента
+    // [+] Добавлено через стили в css...
     const filmComponenPoster = filmComponent.element.querySelector('.film-card__poster');
     const filmComponentTitle = filmComponent.element.querySelector('.film-card__title');
     const filmComponentComments = filmComponent.element.querySelector('.film-card__comments');
 
     const cardToPopupOnClickElements = [filmComponenPoster, filmComponentTitle, filmComponentComments];
+
 
     const replaceCardToPopup = () => {
         popupComponent.film = film;
@@ -34,10 +37,8 @@ const renderFilm = (filmsListElement, film) => {
         siteBodyElement.classList.add('hide-overflow');
         render(footerElement, popupComponent.element, RenderPosition.AFTEREND);
 
-        const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
-
         document.addEventListener('keydown', onEscKeyDown);
-        popupComponentCloseElement.addEventListener('click', onCloseClick);
+        popupComponent.setCloseClickHandler(onCloseClick);
     };
 
     const replacePopupToCard = () => {
@@ -46,31 +47,32 @@ const renderFilm = (filmsListElement, film) => {
         removePopupEvents();
     };
 
-    const onEscKeyDown = (evt) => {
-        if(evt.key === 'Escape' || evt.key === 'Esc') {
-            evt.preventDefault();
-            replacePopupToCard();
-        }
-    }; 
-
-    const onCloseClick = () => {
-        replacePopupToCard();
-    };
-
     const removePopupEvents = () => {
         const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
 
         siteBodyElement.classList.remove('hide-overflow');
 
-        popupComponentCloseElement.removeEventListener('click', onCloseClick);
         document.removeEventListener('keydown', onEscKeyDown);
+        popupComponentCloseElement.removeEventListener('click', onCloseClick);
+    };
+
+
+    const onEscKeyDown = (evt) => {
+        if(evt.key === 'Escape' || evt.key === 'Esc') {
+            evt.preventDefault();
+            replacePopupToCard();
+        }
+    };
+    
+    const onCloseClick = () => {
+        replacePopupToCard();
     };
 
     render(filmsListElement, filmComponent.element, RenderPosition.BEFOREEND);
 
     cardToPopupOnClickElements.forEach((element) => {
-        element.addEventListener('click', () => {
-            replaceCardToPopup();
+        element.addEventListener('click', () => { 
+            replaceCardToPopup(); 
         });
     });
 };
@@ -99,10 +101,8 @@ const renderBoard = (boardContainer, boardFilms) => {
         const showMoreButtonComponent = new ShowMoreButtonView();
     
         render(filmsListElement, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
-    
-        showMoreButtonComponent.element.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            
+
+        const onShowMoreButtonClick = () => {
             boardFilms
                 .slice(renderFilmCount, renderFilmCount + FILM_STEP)
                 .forEach((film) => {
@@ -115,7 +115,9 @@ const renderBoard = (boardContainer, boardFilms) => {
                 showMoreButtonComponent.element.remove();
                 showMoreButtonComponent.removeElement();
             }
-        });
+        };
+    
+        showMoreButtonComponent.setClickHandler(onShowMoreButtonClick);
     }
 };
 
@@ -130,7 +132,7 @@ render(siteHeaderElement, new UserProfileView().element, RenderPosition.BEFOREEN
 render(siteMainElement, new NavigationView(filter).element, RenderPosition.BEFOREEND);
 render(siteMainElement, new FilterView().element, RenderPosition.BEFOREEND);
 
-renderBoard(siteMainElement, films)
+renderBoard(siteMainElement, films);
 
 const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
