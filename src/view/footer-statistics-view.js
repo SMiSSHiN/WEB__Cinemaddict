@@ -1,6 +1,6 @@
 // Переписать, когда будет кол-во фильмов в БД
 
-import { createElement } from "../render.js";
+import { createElement } from "../utils/render.js";
 import AbstractView from "./abstract-view.js";
 
 const createFooterStatisticsTemplate = () => (

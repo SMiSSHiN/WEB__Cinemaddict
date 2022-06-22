@@ -1,3 +1,5 @@
+import AbstractView from "../view/abstract-view";
+
 export const RenderPosition = {
     BEFOREBEGIN: 'beforebegin',
     AFTERBEGIN: 'afterbegin',
@@ -11,22 +13,48 @@ export const renderTemplate = (container, template, place) => {
 
 // [?] Зачем использовать switch ?
 // [?] Зачем нужна ф-ия renderElement ?
-export const render = (container, element, place) => {
+export const render = (container, child, place) => {
+    if (container instanceof AbstractView) {
+        container = container.element;
+    }
+
+    if (child instanceof AbstractView) {
+        child = child.element;
+    }
+
     switch(place) {
         case RenderPosition.BEFOREBEGIN:
-            container.before(element);
+            container.before(child);
             break;
         case RenderPosition.AFTERBEGIN:
-            container.prepend(element);
+            container.prepend(child);
             break;
         case RenderPosition.BEFOREEND:
-            container.append(element);
+            container.append(child);
             break;
         case RenderPosition.AFTEREND:
-            container.after(element);
+            container.after(child);
             break;
     }
 };
+
+export const replace = (newChild, oldChild) => {
+    if (oldChild instanceof AbstractView) {
+        oldChild = oldChild.element;
+    }
+
+    if (newChild instanceof AbstractView) {
+        newChild = newChild.element;
+    }
+
+    const parent = oldChild.parentElement;
+
+    if (parent === null || oldChild === null || newChild === null) {
+        throw new Error('Can\'t replace unexisting elements');
+    }
+
+    parent.replaceChild(newChild, oldChild);
+}
 
 // [?] Зачем нужна ф-ия createElement ?
 // [A]  - Для создания DOM элементов из строк.

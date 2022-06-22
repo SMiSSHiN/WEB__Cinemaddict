@@ -10,7 +10,7 @@ import PopupView from './view/popup-view.js';
 import ShowMoreButtonView from './view/show-more-button-view.js';
 import NoMoviesView from './view/no-movies-view.js';
 
-import { render, RenderPosition } from './render.js';
+import { render, RenderPosition } from './utils/render.js';
 
 import { generateFilm } from './mock/film.js';
 
@@ -35,7 +35,7 @@ const renderFilm = (filmsListElement, film) => {
         // [?] Тем не менее можно кликать на элементы за Popup...
         // [?] Как исправить
         siteBodyElement.classList.add('hide-overflow');
-        render(footerElement, popupComponent.element, RenderPosition.AFTEREND);
+        render(footerElement, popupComponent, RenderPosition.AFTEREND);
 
         document.addEventListener('keydown', onEscKeyDown);
         popupComponent.setCloseClickHandler(onCloseClick);
@@ -81,14 +81,14 @@ const renderBoard = (boardContainer, boardFilms) => {
     const boardComponent = new BoardView();
     const filmsListComponent = new FilmsListView();
 
-    render(boardContainer, boardComponent.element, RenderPosition.BEFOREEND);
-    render(boardComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
+    render(boardContainer, boardComponent, RenderPosition.BEFOREEND);
+    render(boardComponent.element, filmsListComponent, RenderPosition.BEFOREEND);
 
     const filmsListElement = boardComponent.element.querySelector('.films-list');
     const filmsListContainerElement = filmsListComponent.element.querySelectorAll('.films-list__container');
 
     if(boardFilms.length === 0) {
-        render(filmsListElement, new NoMoviesView().element, RenderPosition.AFTERBEGIN)
+        render(filmsListElement, new NoMoviesView(), RenderPosition.AFTERBEGIN)
     }
     
     for (var i = 0; i < Math.min(boardFilms.length, FILM_STEP); i++) {
@@ -100,7 +100,7 @@ const renderBoard = (boardContainer, boardFilms) => {
     
         const showMoreButtonComponent = new ShowMoreButtonView();
     
-        render(filmsListElement, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
+        render(filmsListElement, showMoreButtonComponent, RenderPosition.BEFOREEND);
 
         const onShowMoreButtonClick = () => {
             boardFilms
@@ -128,13 +128,13 @@ const siteHeaderElement = document.querySelector('.header');
 const siteBodyElement = document.querySelector('body');
 const siteMainElement = document.querySelector('.main');
 
-render(siteHeaderElement, new UserProfileView().element, RenderPosition.BEFOREEND);
-render(siteMainElement, new NavigationView(filter).element, RenderPosition.BEFOREEND);
-render(siteMainElement, new FilterView().element, RenderPosition.BEFOREEND);
+render(siteHeaderElement, new UserProfileView(), RenderPosition.BEFOREEND);
+render(siteMainElement, new NavigationView(filter), RenderPosition.BEFOREEND);
+render(siteMainElement, new FilterView(), RenderPosition.BEFOREEND);
 
 renderBoard(siteMainElement, films);
 
 const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
 
-render(footerStatisticsElement, new FooterStatisticsView().element, RenderPosition.BEFOREEND);
+render(footerStatisticsElement, new FooterStatisticsView(), RenderPosition.BEFOREEND);
