@@ -1,7 +1,7 @@
 // Переписать, когда будет структура пользователя
 // Написать ф-ию createFilter(films), которая будет возвращать
 //  готовый объект {films.length, watchedFilmsCount, voriteFilmsCount}
-import { createElement } from "../render.js";
+import AbstractView from "./abstract-view.js";
 
 export const createFilter = (films) => {
     let filmsCount = films.length;
@@ -32,25 +32,13 @@ export const createNavigationTemplate = (filter) => {
   </nav>`
 };
 
-export default class NavigationView {
+export default class NavigationView extends AbstractView {
     constructor(filter) {
+        super();
         this._filter = filter;
-        this._element = null;
-    }
-
-    get element() {
-        if(!this._element) {
-            this._element = createElement(this.template);
-        }
-
-        return this._element;
     }
 
     get template() {
         return createNavigationTemplate(this._filter);
-    }
-
-    removeElement() {
-        this._element = null;
     }
 }

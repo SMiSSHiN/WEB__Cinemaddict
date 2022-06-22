@@ -1,4 +1,4 @@
-import { createElement } from "../render.js";
+import AbstractView from "./abstract-view.js";
 
 const createFilterTemplate = () => (
     `<ul class="sort">
@@ -8,24 +8,8 @@ const createFilterTemplate = () => (
   </ul>`
 );
 
-export default class FilterView {
-    constructor() {
-        this._element = null;
-    }
-
-    get element() {
-        if(!this._element) {
-            this._element = createElement(this.template);
-        }
-
-        return this._element;
-    }
-
+export default class FilterView extends AbstractView {
     get template() {
         return createFilterTemplate();
-    }
-
-    removeElement() {
-        this._element = null;
     }
 }

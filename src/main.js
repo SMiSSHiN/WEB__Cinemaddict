@@ -10,7 +10,7 @@ import PopupView from './view/popup-view.js';
 import ShowMoreButtonView from './view/show-more-button-view.js';
 import NoMoviesView from './view/no-movies-view.js';
 
-import { render, RenderPosition } from './render.js';
+import { render, RenderPosition } from './utils/render.js';
 
 import { generateFilm } from './mock/film.js';
 
@@ -19,25 +19,26 @@ const FILM_COUNT = 22;
 
 const renderFilm = (filmsListElement, film) => {
     const filmComponent = new FilmCardView(film);
+    const popupComponent = new PopupView();
     
-    // [-] Добавить смену курсора с стрелки на палец при наведении на эти 3 элемента
+    // [?] Добавить смену курсора с стрелки на палец при наведении на эти 3 элемента
+    // [+] Добавлено через стили в css...
     const filmComponenPoster = filmComponent.element.querySelector('.film-card__poster');
     const filmComponentTitle = filmComponent.element.querySelector('.film-card__title');
     const filmComponentComments = filmComponent.element.querySelector('.film-card__comments');
 
     const cardToPopupOnClickElements = [filmComponenPoster, filmComponentTitle, filmComponentComments];
 
+
     const replaceCardToPopup = () => {
         popupComponent.film = film;
         // [?] Тем не менее можно кликать на элементы за Popup...
         // [?] Как исправить
         siteBodyElement.classList.add('hide-overflow');
-        render(footerElement, popupComponent.element, RenderPosition.AFTEREND);
-
-        const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
+        render(footerElement, popupComponent, RenderPosition.AFTEREND);
 
         document.addEventListener('keydown', onEscKeyDown);
-        popupComponentCloseElement.addEventListener('click', onCloseClick);
+        popupComponent.setCloseClickHandler(onCloseClick);
     };
 
     const replacePopupToCard = () => {
@@ -46,31 +47,32 @@ const renderFilm = (filmsListElement, film) => {
         removePopupEvents();
     };
 
-    const onEscKeyDown = (evt) => {
-        if(evt.key === 'Escape' || evt.key === 'Esc') {
-            evt.preventDefault();
-            replacePopupToCard();
-        }
-    }; 
-
-    const onCloseClick = () => {
-        replacePopupToCard();
-    };
-
     const removePopupEvents = () => {
         const popupComponentCloseElement = popupComponent.element.querySelector('.film-details__close-btn');
 
         siteBodyElement.classList.remove('hide-overflow');
 
-        popupComponentCloseElement.removeEventListener('click', onCloseClick);
         document.removeEventListener('keydown', onEscKeyDown);
+        popupComponentCloseElement.removeEventListener('click', onCloseClick);
+    };
+
+
+    const onEscKeyDown = (evt) => {
+        if(evt.key === 'Escape' || evt.key === 'Esc') {
+            evt.preventDefault();
+            replacePopupToCard();
+        }
+    };
+    
+    const onCloseClick = () => {
+        replacePopupToCard();
     };
 
     render(filmsListElement, filmComponent.element, RenderPosition.BEFOREEND);
 
     cardToPopupOnClickElements.forEach((element) => {
-        element.addEventListener('click', () => {
-            replaceCardToPopup();
+        element.addEventListener('click', () => { 
+            replaceCardToPopup(); 
         });
     });
 };
@@ -79,14 +81,14 @@ const renderBoard = (boardContainer, boardFilms) => {
     const boardComponent = new BoardView();
     const filmsListComponent = new FilmsListView();
 
-    render(boardContainer, boardComponent.element, RenderPosition.BEFOREEND);
-    render(boardComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
+    render(boardContainer, boardComponent, RenderPosition.BEFOREEND);
+    render(boardComponent.element, filmsListComponent, RenderPosition.BEFOREEND);
 
     const filmsListElement = boardComponent.element.querySelector('.films-list');
     const filmsListContainerElement = filmsListComponent.element.querySelectorAll('.films-list__container');
 
     if(boardFilms.length === 0) {
-        render(filmsListElement, new NoMoviesView().element, RenderPosition.AFTERBEGIN)
+        render(filmsListElement, new NoMoviesView(), RenderPosition.AFTERBEGIN)
     }
     
     for (var i = 0; i < Math.min(boardFilms.length, FILM_STEP); i++) {
@@ -98,11 +100,9 @@ const renderBoard = (boardContainer, boardFilms) => {
     
         const showMoreButtonComponent = new ShowMoreButtonView();
     
-        render(filmsListElement, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
-    
-        showMoreButtonComponent.element.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            
+        render(filmsListElement, showMoreButtonComponent, RenderPosition.BEFOREEND);
+
+        const onShowMoreButtonClick = () => {
             boardFilms
                 .slice(renderFilmCount, renderFilmCount + FILM_STEP)
                 .forEach((film) => {
@@ -115,7 +115,9 @@ const renderBoard = (boardContainer, boardFilms) => {
                 showMoreButtonComponent.element.remove();
                 showMoreButtonComponent.removeElement();
             }
-        });
+        };
+    
+        showMoreButtonComponent.setClickHandler(onShowMoreButtonClick);
     }
 };
 
@@ -126,13 +128,13 @@ const siteHeaderElement = document.querySelector('.header');
 const siteBodyElement = document.querySelector('body');
 const siteMainElement = document.querySelector('.main');
 
-render(siteHeaderElement, new UserProfileView().element, RenderPosition.BEFOREEND);
-render(siteMainElement, new NavigationView(filter).element, RenderPosition.BEFOREEND);
-render(siteMainElement, new FilterView().element, RenderPosition.BEFOREEND);
+render(siteHeaderElement, new UserProfileView(), RenderPosition.BEFOREEND);
+render(siteMainElement, new NavigationView(filter), RenderPosition.BEFOREEND);
+render(siteMainElement, new FilterView(), RenderPosition.BEFOREEND);
 
-renderBoard(siteMainElement, films)
+renderBoard(siteMainElement, films);
 
 const footerElement = document.querySelector('.footer');
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
 
-render(footerStatisticsElement, new FooterStatisticsView().element, RenderPosition.BEFOREEND);
+render(footerStatisticsElement, new FooterStatisticsView(), RenderPosition.BEFOREEND);

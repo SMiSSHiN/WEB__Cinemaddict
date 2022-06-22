@@ -1,29 +1,14 @@
 // Переписать, когда будет кол-во фильмов в БД
 
-import { createElement } from "../render.js";
+import { createElement } from "../utils/render.js";
+import AbstractView from "./abstract-view.js";
 
 const createFooterStatisticsTemplate = () => (
     `<p>130 291 movies inside</p>`
 );
 
-export default class FooterStatisticsView {
-    constructor() {
-        this._element = null;
-    }
-
-    get element() {
-        if(!this._element) {
-            this._element = createElement(this.template);
-        }
-
-        return this._element;
-    }
-
+export default class FooterStatisticsView extends AbstractView {
     get template() {
         return createFooterStatisticsTemplate();
-    }
-
-    removeElement() {
-        this._element = null;
     }
 }

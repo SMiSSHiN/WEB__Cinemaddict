@@ -357,6 +357,7 @@ button {
 .film-card__rating {
   display: inline;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .film-card__title {
@@ -485,6 +486,7 @@ button {
 
 .film-card .film-card__poster {
   bottom: calc(100% - 340px);
+  cursor: pointer;
 }
 
 .film-card .film-card__controls {

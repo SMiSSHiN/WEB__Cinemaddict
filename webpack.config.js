@@ -8,7 +8,23 @@ module.exports = {
     },
     devtool: 'source-map',                                  /* карты исходников */
     devServer: {
-        contentBase: path.resolve(__dirname, 'public'),     /* откуда смотреть исходники */
-        watchContentBase: true                              /* перезагружать страницу при изменении? */
+        hot: false
+    },
+    // devServer: {
+    //     contentBase: path.resolve(__dirname, 'public'),     /* откуда смотреть исходники */
+    //     watchContentBase: true                              /* перезагружать страницу при изменении? */
+    // }
+    module: {
+        rules: [
+            {
+              test: /\.js$/,
+              exclude: /(node_modules)/,
+              use: ['babel-loader']
+            },
+            {
+              test: /\.css$/i,
+              use: ['style-loader', 'css-loader']
+            }
+        ]
     }
 };
